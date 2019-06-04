@@ -20,6 +20,10 @@
 #   Guilherme Maciel Ferreira - initial version
 #*******************************************************************************/
 
+cmake_minimum_required(VERSION 3.5)
+set(PAHO_CPP_LIB paho-mqttpp3)
+set(PAHO_C_LIB paho-mqtt3as)
+
 ## Note: on OS X you should install XCode and the associated command-line tools
 
 ## --- Library dependencies ---
@@ -35,17 +39,19 @@ add_executable(async_publish async_publish.cpp)
 add_executable(async_subscribe async_subscribe.cpp)
 add_executable(async_consume async_consume.cpp)
 add_executable(sync_publish sync_publish.cpp)
+add_executable(sync_subscribe sync_subscribe.cpp)
 add_executable(sync_consume sync_consume.cpp)
 add_executable(data_publish data_publish.cpp)
 add_executable(pub_speed_test pub_speed_test.cpp)
 
 ## link binaries
-target_link_libraries(async_publish ${PAHO_CPP_LIB})
-target_link_libraries(async_subscribe ${PAHO_CPP_LIB})
-target_link_libraries(async_consume ${PAHO_CPP_LIB})
-target_link_libraries(sync_publish ${PAHO_CPP_LIB})
-target_link_libraries(sync_consume ${PAHO_CPP_LIB})
-target_link_libraries(data_publish ${PAHO_CPP_LIB})
+target_link_libraries(async_publish ${PAHO_CPP_LIB} ${PAHO_C_LIB})
+target_link_libraries(async_subscribe ${PAHO_CPP_LIB} ${PAHO_C_LIB})
+target_link_libraries(async_consume ${PAHO_CPP_LIB} ${PAHO_C_LIB})
+target_link_libraries(sync_publish ${PAHO_CPP_LIB} ${PAHO_C_LIB})
+target_link_libraries(sync_subscribe ${PAHO_CPP_LIB} ${PAHO_C_LIB})
+target_link_libraries(sync_consume ${PAHO_CPP_LIB} ${PAHO_C_LIB})
+target_link_libraries(data_publish ${PAHO_CPP_LIB} ${PAHO_C_LIB})
 
 target_link_libraries(pub_speed_test ${PAHO_CPP_LIB}
     Threads::Threads)
@@ -55,6 +61,7 @@ set(INSTALL_TARGETS
     async_subscribe
     async_consume
     sync_publish
+    sync_subscribe
     sync_consume
     data_publish
     pub_speed_test

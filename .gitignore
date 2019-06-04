@@ -19,3 +19,12 @@ Makefile.in
 *.lo
 *.o
 *.stamp
+build/
+Build/
+BUILD/
+Release/
+RELEASE/
+Debug/
+DEBUG/
+ipch/
+.vscode/
