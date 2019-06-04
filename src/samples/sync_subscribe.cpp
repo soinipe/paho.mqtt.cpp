@@ -42,7 +42,10 @@ const std::string SERVER_ADDRESS("tcp://localhost:1883");
 const std::string CLIENT_ID("sync_subcribe_cpp");
 const std::string TOPIC("hello");
 
-const int QOS = 1;
+const int QOS = 0;
+
+// Quick&dirty flag for letting subscription proceed
+volatile bool flag_connected = false;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -58,7 +61,8 @@ class callback : public virtual mqtt::callback
 
 	void connected(const std::string& cause) override {
 		std::cout << "\nConnected: " << cause << std::endl;
-		cli_.subscribe(TOPIC, QOS);
+		//cli_.subscribe(TOPIC, QOS); // Commented out to get the sample working
+		flag_connected = true;
 		std::cout << std::endl;
 	}
 
@@ -73,7 +77,9 @@ class callback : public virtual mqtt::callback
 
 	// Callback for when a message arrives.
 	void message_arrived(mqtt::const_message_ptr msg) override {
-		std::cout << msg->get_topic() << ": " << msg->get_payload_str() << std::endl;
+		// Do not print full message, just indidate reception
+        size_t msglen = msg->get_payload_str().length();
+		std::cout << "Received " << msg->get_topic() << ": " << msglen << " bytes" << std::endl;
 	}
 
 	void delivery_complete(mqtt::delivery_token_ptr token) override {}
@@ -101,8 +107,15 @@ int main(int argc, char* argv[])
 	try {
 		std::cout << "Connecting to the MQTT server..." << std::flush;
 		cli.connect(connOpts);
-		cli.subscribe(TOPIC, QOS);
+
+		// Make subscription after connection ready
+		while (flag_connected == false)
+		{
+			std::cout << "." << std::flush;
+		}
 		std::cout << "OK" << std::endl;
+		cli.subscribe(TOPIC, QOS);
+		std::cout << "Subscribe done" << std::endl;
 	}
 	catch (const mqtt::exception& exc) {
 		std::cerr << "\nERROR: Unable to connect to MQTT server: '"
